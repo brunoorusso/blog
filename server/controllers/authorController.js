@@ -2,21 +2,47 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../db");
 
-// Select all authors
+/**
+ * @swagger
+ * /authors/all:
+ *   get:
+ *     summary: Retorna todos os autores.
+ *     responses:
+ *       200:
+ *         description: Sucesso ao obter os autores.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Author'
+ *       404:
+ *         description: Nenhum autor encontrado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *     tags:
+ *       - Authors
+ */
 router.get("/all", async (req, res) => {
   try {
-    pool.query("SELECT * FROM author", (err, result) => {
-      if (err) {
-        console.error("Error", err);
-        res.status(500).json({ error: "Error finding authors" });
-      } else {
-        console.log("Authors: ", result.rows);
-        res.status(200).json(result.rows);
-      }
-    });
-  } catch (err) {
-    console.error("Error", err);
-    res.status(500).json({ err: "Internal server error" });
+
+    const { rows } = await pool.query("SELECT * FROM author");
+
+    if(rows.length === 0){
+      console.error("Error finding authors", err);
+      res.status(404).json({ error: "Authors not found"});
+    } else {
+      console.log("Authors", rows);
+      res.status(200).json(rows);
+    }
+  } catch(err) {
+    console.error("Internal server error", err);
+    res.status(500).json({ error: "Internal Server Error"})
   }
 });
 
