@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../db");
 
-// Selecionar todos os autores
+// Select all authors
 router.get("/all", async (req, res) => {
   try {
     pool.query("SELECT * FROM author", (err, result) => {
@@ -20,10 +20,10 @@ router.get("/all", async (req, res) => {
   }
 });
 
-// Criar novo autor
+// Create new author
 router.post("/new", async (req, res) => {
   const { username, name, description } = req.body;
-  
+
   try {
     const { rows } = await pool.query(
       `SELECT * FROM author WHERE username = $1`,
@@ -49,5 +49,43 @@ router.post("/new", async (req, res) => {
   }
 });
 
+// Update author
+router.put("/update/:id", async (req, res) => {
+  const { id } = req.params;
+  const { username, name, description } = req.body;
+
+  try{
+    const { rows } = await pool.query(`SELECT * FROM author WHERE id = $1`, [id]);
+  
+    if(rows.length === 0){
+      return res.status(404).json({
+        error: "Author not found!"
+      });
+    }
+
+    const result = await pool.query(`UPDATE author SET username = $1, name = $2, description = $3 WHERE id = $4`, [username, name, description, id]);
+    res.status(200).json({message: "Author updated successfully!"});
+  } catch(err){
+    console.error("Error", err);
+    res.status(500).json({error: "INTERNAL SERVER ERROR"})
+  }
+});
+
+// Delete author
+router.delete("/delete/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await pool.query(`DELETE FROM author WHERE id = $1`, [id]);
+    if (result.rowCount > 0) {
+      res.status(200).json({ message: "Author deleted" });
+    } else {
+      res.status(404).json({ error: "Author not found" });
+    }
+  } catch (err) {
+    console.error("Error while deleting author", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 module.exports = router;
