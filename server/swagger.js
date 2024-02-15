@@ -19,6 +19,14 @@ const swaggerDefinition = {
         },
         required: ["id", "username", "name"],
       },
+      Category: {
+        type: "object",
+        properties: {
+          id: {type: "integer"},
+          name: {type: "string"},
+          parent_category_id: {type: "integer"}
+        }
+      }
     },
   },
 };

@@ -1,5 +1,6 @@
 const express = require('express');
 const authorRouter = require('./controllers/authorController');
+const categoryRouter = require('./controllers/categoryController');
 const app = express();
 const bodyParser = require('body-parser');
 const swaggerUI = require('swagger-ui-express');
@@ -15,6 +16,7 @@ app.get("/", (req, res) => {
 app.use(bodyParser.json());
 
 app.use('/authors', authorRouter);
+app.use('/categories', categoryRouter);
 
 app.listen(port, () => {
     console.log(`Running on ${port}`);
