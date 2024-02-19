@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../db");
+const { authenticateToken } = require('./authMiddleware');
 
 /**
  * @swagger
@@ -83,7 +84,7 @@ router.get("/all", async (req, res) => {
  *     tags:
  *       - Authors
  */
-router.post("/new", async (req, res) => {
+router.post("/new", authenticateToken, async (req, res) => {
   const { username, name, description } = req.body;
 
   try {
@@ -111,8 +112,61 @@ router.post("/new", async (req, res) => {
   }
 });
 
-// Update author
-router.put("/update/:id", async (req, res) => {
+/**
+ * @swagger
+ * /authors/update/{id}:
+ *   put:
+ *     summary: Atualizar autor.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID do autor a ser atualizado
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Sucesso ao atualizar um novo autor.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       404:
+ *         description: Autor não encontrado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *       500:
+ *         description: Erro interno do servidor.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
+router.put("/update/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
   const { username, name, description } = req.body;
 
@@ -139,7 +193,7 @@ router.put("/update/:id", async (req, res) => {
 });
 
 // Delete author
-router.delete("/delete/:id", async (req, res) => {
+router.delete("/delete/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
 
   try {

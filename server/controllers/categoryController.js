@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../db");
+const { authenticateToken } = require('./authMiddleware');
 
 /**
  * @swagger
@@ -59,7 +60,7 @@ router.post("/new", async (req, res) => {
     }
 });
 
-router.put("/update/:id", async (req, res) => {
+router.put("/update/:id", authenticateToken, async (req, res) => {
     const { id } = req.params;
     const { name, parent_category_id } = req.body;
 
@@ -83,7 +84,7 @@ router.put("/update/:id", async (req, res) => {
       }
 })
 
-router.delete("/delete/:id", async (req, res) => {
+router.delete("/delete/:id", authenticateToken, async (req, res) => {
     const { id } = req.params;
 
     try {
