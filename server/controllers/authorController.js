@@ -177,7 +177,7 @@ router.put("/update/:id", authenticateToken, async (req, res) => {
 
     if (rows.length === 0) {
       return res.status(404).json({
-        error: "Author not found!",
+        error: "Author not found!"
       });
     }
 
